@@ -1,0 +1,8 @@
+This online tool is a quick and simple solution for changing
+the line length of a text by inserting, removing or moving line breaks.
+The new length of "the lines" can be set dynamically, that is, based on a
+specific word or character such as 'a' semicolon or comma, or determined
+by the number of characters per line. An example of use would be
+inserting a line break	(or newline) in front of or behind a
+certain delimiter, to generate a list from an enumeration.|
+|	|\\|'|"|
