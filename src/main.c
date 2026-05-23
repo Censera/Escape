@@ -1,5 +1,6 @@
 #	include	<stdio.h>
 #	include	<stdlib.h>
+#	include	<unistd.h>
 
 int	main(int argc, char **argv)
 {
@@ -15,6 +16,10 @@ int	main(int argc, char **argv)
 	}
 	else
 	{
+		if (isatty(STDIN_FILENO))
+		{
+			return (1);
+		}
 		file = stdin;
 	}
 
