@@ -1,16 +1,33 @@
 #	include	<stdio.h>
 #	include	<stdlib.h>
 #	include	<unistd.h>
+#	include	<string.h>
+#	include	<errno.h>
+
+#	define	RED	"\x1b[31m"
+#	define	YELLOW	"\x1b[33m"
+#	define	MAGENTA	"\x1b[35m"
+#	define	RESET	"\x1b[m"
 
 int	main(int argc, char **argv)
 {
 	FILE *file;
 
-	if (argc >= 2 && argv[1] == NULL)
+	if (argc >= 2 && argv[1] != NULL)
 	{
 		file = fopen(argv[1], "r");
 		if (file == NULL)
 		{
+			fprintf(stderr, "\n[%sERROR%s]\tCannot open %s: %s\n", RED, RESET, argv[1], strerror(errno));
+
+			if (errno == ENOENT)
+			{
+				fprintf(stderr, "[%sNOTE%s]\tCouldn't find the file\n\n", MAGENTA, RESET);
+			}
+			else if (errno == EACCES)
+			{
+				fprintf(stderr, "[%sNOTE%s]\tYou don't have permission to read this file\n\n", MAGENTA, RESET);
+			}
 			return (1);
 		}
 	}
@@ -18,102 +35,32 @@ int	main(int argc, char **argv)
 	{
 		if (isatty(STDIN_FILENO))
 		{
+			fprintf(stderr, "\n[%sERROR%s]\tNo file argument was provided\n\n", RED, RESET);
 			return (1);
 		}
 		file = stdin;
 	}
 
 	int	ch;
-	size_t	cap = 4096;
-	char	*escaped = malloc(cap);
-	if (escaped == NULL)
-	{
-		if (file != stdin) fclose(file);
-		return (1);
-	}
-	escaped[0] = '\0';
-
-	size_t i = 0;
 	while ((ch = getc(file)) != EOF)
 	{
-		if (i + 4 >= cap)
-		{
-			cap *= 2;
-			char	*new_escaped = realloc(escaped, cap);
-
-			if (new_escaped == NULL)
-			{
-				free(escaped);
-				if (file != stdin) fclose(file);
-				return (1);
-			}
-
-			escaped = new_escaped;
-		}
 
 		switch (ch)
 		{
-			case '\n':
-				escaped[i++] = '\\';
-				escaped[i++] = 'n';
-				break;
-
-			case '\t':
-				escaped[i++] = '\\';
-				escaped[i++] = 't';
-				break;
-
-			case '\'':
-				escaped[i++] = '\\';
-				escaped[i++] = '\'';
-				break;
-
-			case '\"':
-				escaped[i++] = '\\';
-				escaped[i++] = '"';
-				break;
-
-			case '\\':
-				escaped[i++] = '\\';
-				escaped[i++] = '\\';
-				break;
-
-			case '\b':
-				escaped[i++] = '\\';
-				escaped[i++] = 'b';
-				break;
-
-			case '\f':
-				escaped[i++] = '\\';
-				escaped[i++] = 'f';
-				break;
-
-			case '\r':
-				escaped[i++] = '\\';
-				escaped[i++] = 'r';
-				break;
-
-			default:
-				if ((ch >= 0 && ch < 32) || ch == 127)
-				{
-					sprintf(&escaped[i], "//x%02X", ch);
-					i += 4;
-				}
-				else
-				{
-					escaped[i++] = (char)ch;
-				}
-				break;
-
+			case '\n':	putchar('\\'); putchar('n'); break;
+			case '\t':	putchar('\\'); putchar('t'); break;
+			case '\b':	putchar('\\'); putchar('b'); break;
+			case '\r':	putchar('\\'); putchar('r'); break;
+			case '\f':	putchar('\\'); putchar('f'); break;
+			case '\'':	putchar('\\'); putchar('\''); break;
+			case '\"':	putchar('\\'); putchar('"'); break;
+			case '\\':	putchar('\\'); putchar('\\'); break;
+			default:	putchar(ch); break;
 		}
 	}
-	escaped[i] = '\0';
 
-	printf("%s\n", escaped);
+	putchar('\n');
 
-	free(escaped);
-	if (file != stdin) {
-		fclose(file);
-	}
+	if (file != stdin) fclose(file);
 	return (0);
 }
