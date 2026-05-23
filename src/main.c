@@ -5,7 +5,6 @@
 #	include	<errno.h>
 
 #	define	RED	"\x1b[31m"
-#	define	YELLOW	"\x1b[33m"
 #	define	MAGENTA	"\x1b[35m"
 #	define	RESET	"\x1b[m"
 
