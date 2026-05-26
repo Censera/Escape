@@ -19,10 +19,11 @@ The content in file.txt is `John:	"Hello, I'm John."`
 ```bash
 ./build/escape tst/file.txt
 ```
-output: `John:\t\"Hello, I\'m John.\"\n`
+
+Output: `John:\t\"Hello, I\'m John.\"\n
 
 ```bash
 echo "John: \"Hello, I'm John.\"" | ./build/escape 
 ```
 
-output: `John: \"Hello, I\'m John.\"\n`
+Output: `John: \"Hello, I\'m John.\"\n`
